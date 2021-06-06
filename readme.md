@@ -1,27 +1,21 @@
 # FSCEE
-The main code is comes from:
+The main code comes from:
 # Meta Dialog Platform (MDP)
-
-Meta Dialog Platform: a toolkit platform for **NLP Few-Shot Learning** tasks of:
+```
+@article{hou2020fewjoint,
+	title={FewJoint: A Few-shot Learning Benchmark for Joint Language Understanding},
+	author={Yutai Hou, Jiafeng Mao, Yongkui Lai, Cheng Chen, Wanxiang Che, Zhigang Chen, Ting Liu},
+	journal={arXiv preprint},
+	year={2020}
+}
+```
+Meta Dialog Platform is  a toolkit platform for **NLP Few-Shot Learning** tasks of:
 - Text Classification
 - Sequence Labeling
 
-It also provides the baselines for [Track-1 of SMP2020: Few-shot dialog language understanding](https://smp2020.aconf.cn/smp.html#3).
-
-### Features
-State-of-the-art solutions for Few-shot NLP:
--  Support Few-shot Learning for sequence-labeling task with state-of-the-art methods: CDT [(Hou et al., 2020)](https://arxiv.org/abs/2006.05702).
--  Support to use semantic within label name or label description. 
--  Support various deep pre-trained embedding compatible with [huggingface/transformers](https://github.com/huggingface/transformers), such as **[BERT](https://arxiv.org/abs/1810.04805)** and **[Electra](https://openreview.net/forum?id=r1xMH1BtvB)**.
--  Support pair-wise embedding mechanism ([Hou et al., 2020](https://arxiv.org/abs/2006.05702), [Gao et al., 2019](https://www.aclweb.org/anthology/D19-1649)).
-
-
-Easy-to-start & flexible framework:
--  Provide tools for easy training & testing.
--  Support various few-shot models with unified and extendable interfaces, such as ProtoNet and TapNet.
--  Support easy-to-switch similarity-metrics and logits-scaling methods.
--  Provide tools of generating episode-style data for meta-learning.
-
+It also provides the baselines for:
+- [Track-1 of SMP2020: Few-shot dialog language understanding](https://smp2020.aconf.cn/smp.html#3).
+- [Benchmark Paper: "FewJoint: A Few-shot Learning Benchmark for Joint Language Understanding"]("https://arxiv.org/abs/2009.08138")
 
 ## Get Started
 
@@ -36,28 +30,65 @@ allennlp>=0.8.4
 pytorch-nlp
 ```
 
-### Example for Sequence Labeling
-Here, we take the few-shot slot tagging and NER task from [(Hou et al., 2020)](https://arxiv.org/abs/2006.05702) as quick start examples.
+### Example for Event extraction (also for Sequence Labeling)
+
 
 #### Step1: Prepare pre-trained embedding
 - Download the pytorch bert model, or convert tensorflow param by yourself with [scripts](https://github.com/huggingface/transformers/blob/master/src/transformers/convert_bert_original_tf_checkpoint_to_pytorch.py).
-- Set BERT path in the `./scripts/run_1_shot_slot_tagging.sh` to your setting:
+- Set BERT path in the `./scripts/your_script.sh` to your setting, for example:
+
 ```bash
 bert_base_uncased=/your_dir/uncased_L-12_H-768_A-12/
 bert_base_uncased_vocab=/your_dir/uncased_L-12_H-768_A-12/vocab.txt
 ```
 
 #### Step2: Prepare data
-- Download the few-shot sequence-labeling data at [my homepage](https://atmahou.github.io/) or click here: [download](https://atmahou.github.io/attachments/ACL2020data.zip)
+- Prepare the few-shot data set. 
 
-- Set test, train, dev data file path in `./scripts/run_1_shot_slot_tagging.sh` to your setting.
+##### few-shot/meta-episode style data example
+
+```json
+{
+    [
+        {"support":
+            {"seq_ins": ["…明年实行破产…"], 
+            "seq_outs": [[…, "O", "O", "O", "O", "B-Business-Declare-Bankruptcy", "I-Business-Declare-Bankruptcy", …]], 
+            "labels": ["Business:Declare-Bankruptcy"], 
+            "adj": ["ROOT/dep=20/gov=-1", "dep/dep=0/gov=6",...]}, 
+        "batch": 
+            {"seq_ins": ["…上个月申请破产…"], 
+            "seq_outs": [["O", "O", "O", "O","O","B-Business-Declare-Bankruptcy", "I-Business-Declare-Bankruptcy",…]], 
+            "labels": ["Business:Declare-Bankruptcy"], 
+            "adj": [["ROOT/dep=10/gov=-1", "compound:nn/dep=0/gov=2", ...]]}
+        }
+    ], 
+  ...
+}
+
+```
+
+
+- Set test, train, dev data file path in `./scripts/your_script.sh` to your setting.
   
 > For simplicity, your only need to set the root path for data as follow:
 ```bash
-base_data_dir=/your_dir/ACL2020data/
+base_data_dir=/your_dir/
+```
+#### Step3: select the model
+You can set the loss weight by :
+```
+inter_loss_lst=(0 0.1 0.2 0.3)
+```
+if want to use GCNs , do following:
+```
+gcns_lst=(1)
+```
+if want to use label semantic information , do following:
+```
+use_schema=--use_schema
 ```
 
-#### Step3: Train and test the main model
+#### Step4: Train and test the main model
 - Build a folder to collect running log
 ```bash
 mkdir result
@@ -65,17 +96,10 @@ mkdir result
 
 - Execute cross-evaluation script with two params: -[gpu id] -[dataset name]
 
-##### Example for 1-shot slot tagging:
+##### Example for 5-shot trigger extraction:
 ```bash
-source ./scripts/run_1_shot_slot_tagging.sh 0 snips
+source ./scripts/zh_ACE_run_5_shot_slot_tagging.sh 0
 ```  
-
-##### Example for 1-shot NER:
-```bash
-source ./scripts/run_1_shot_slot_tagging.sh 0 ner
-```
-
-> To run 5-shots experiments, use `./scripts/run_5_shot_slot_tagging.sh`
 
 ### Other detailed functions and options:
 You can experiment freely by passing parameters to `main.py` to choose different model architectures, hyperparameters, etc.
@@ -86,24 +110,6 @@ python main.py --h
 ```
 
 We provide scripts for general few-shot classification and sequence labeling task respectively:
-
-- classification
-    - `run_electra_sc.sh`
-    - `run_bert_sc.sh`
-- sequence labeling
-    - `run_electra_sl.sh`
-    - `run_bert_sl.sh`
-
-The usage of these scripts are similar to process in Get Started.
-
-
-## run with SMP data
-- Get constructed SMP data by contact me or sign up for the [Track-1 of SMP2020](https://smp2020.aconf.cn/smp.html#3) and construct few-shot data by yourself.
-- Use script `./scripts/run_smp_bert_sc.sh` and `./scripts/run_smp_bert_sl.sh` to perform few-shot intent detection or few-shot slot filling respectively.
-- Notice that: 
-    1. For data confidentiality, the testset labels are not given, so the testing scores in output are meaningless. 
-    2. Find predicted results at `trained_model_path` within running scripts.
-
 
 ## Few-shot Data Construction Tool
 We also provide a generation tool for converting normal data into few-shot/meta-episode style. 
@@ -130,32 +136,7 @@ The following are some key params for you to control the generation process:
 > you can add your code for load raw dataset in `meta_dataset_generator/raw_data_loader.py`.
 
 
-##### few-shot/meta-episode style data example
-
-```json
-{
-  "domain_name": [
-    {  // episode
-      "support": {  // support set
-        "seq_ins": [["we", "are", "friends", "."], ["how", "are", "you", "?"]],  // input sequence
-        "seq_outs": [["O", "O", "O", "O"], ["O", "O", "O", "O"]],  // output sequence in sequence labeling task
-        "labels": [["statement"], ["query"]]  // output labels in classification task
-      },
-      "query": {  // query set
-        "seq_ins": [["we", "are", "friends", "."], ["how", "are", "you", "?"]],
-        "seq_outs": [["O", "O", "O", "O"], ["O", "O", "O", "O"]],
-        "labels": [["statement"], ["query"]]
-      }
-    },
-    ...
-  ],
-  ...
-}
-
-```
-
-
 
 ## Acknowledgment
 
-The platform is developed by [HIT-SCIR](http://ir.hit.edu.cn/). If you have any question and advice for it, please contact us(Yutai Hou - [ythou@ir.hit.edu.cn]() or Yongkui Lai - [yklai@ir.hit.edu.cn]()).
+The platform is developed by [HIT-SCIR](http://ir.hit.edu.cn/). 
