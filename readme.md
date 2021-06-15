@@ -2,6 +2,8 @@
 This code is for KSEM 2021 paper "Syntactic Enhanced Projection Network for Few-shot Chinese Event Extraction".
 
 # Overview
+![FSCEE framework](https://github.com/WeSIG/FSCEE/blob/main/FECEE.pdf)
+
 In this work, we explore the Chinese event extraction with limited labeled data and reformulate it as a few-shot sequence tagging task. 
 To this end, we propose a novel and practical few-shot syntactic enhanced projection network(SEPN), which exploits a syntactic learner to not only integrate the semantics of the sentence, but also make the extracted feature more discriminative.  
 Considering the corpus in this task is limited and the performance perturbation, we propose an adaptive max-margin loss. 
