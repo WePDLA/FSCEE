@@ -5,8 +5,7 @@ This code is for KSEM 2021 paper "Syntactic Enhanced Projection Network for Few-
 ![FSCEE framework](https://github.com/WeSIG/FSCEE/blob/main/FECEE.pdf)
 
 In this work, we explore the Chinese event extraction with limited labeled data and reformulate it as a few-shot sequence tagging task. 
-To this end, we propose a novel and practical few-shot syntactic enhanced projection network(SEPN), which exploits a syntactic learner to not only integrate the semantics of the sentence, but also make the extracted feature more discriminative.  
-Considering the corpus in this task is limited and the performance perturbation, we propose an adaptive max-margin loss. 
+To this end, we propose a novel and practical few-shot syntactic enhanced projection network(SEPN), which exploits a syntactic learner to not only integrate the semantics of the sentence, but also make the extracted feature more discriminative. Considering the corpus in this task is limited and the performance perturbation, we propose an adaptive max-margin loss. 
 In future work, we will further improve the transition module under the few-shot setting to better capture the dependency between tags. 
 
 ## Get Started
@@ -41,7 +40,7 @@ Make sure that:
 - Each type of label appears at least K times in each episode. 
 - To get enough training data for the 5-shot query setting, we delete the class which contains less than 10 samples. 
 	
-##### few-shot/meta-episode style data example
+##### Few-shot/meta-episode style data example
 
 ```json
 {
@@ -79,11 +78,11 @@ You can set the loss weight by :
 ```
 inter_loss_lst=(0 0.1 0.2 0.3)
 ```
-if want to add GCNs embedding, do following:
+If you want to add GCNs embedding, do following:
 ```
 gcns_lst=(1)
 ```
-if want to use label semantic information , do following:
+If you want to use label semantic information , do following:
 ```
 use_schema=--use_schema
 ```
@@ -127,7 +126,7 @@ The following are some key params for you to control the generation process:
 - `dataset_lst`: specified the dataset type which our tool can handle, there are some choices: `stanford` & `SLU` & `TourSG` & `SMP`. 
 
 > If you want to handle other type of dataset, 
-> you can add your code for load raw dataset in `meta_dataset_generator/raw_data_loader.py`.
+> You can add your code for load raw dataset in `meta_dataset_generator/raw_data_loader.py`.
 
 
 ## Acknowledgment
