@@ -128,7 +128,16 @@ The following are some key params for you to control the generation process:
 > If you want to handle other type of dataset, 
 > You can add your code for load raw dataset in `meta_dataset_generator/raw_data_loader.py`.
 
+## Citation
 
+```
+@inproceedings{Feng2021SEPN,
+ author = {Linhui Feng, Linbo Qiao, Yi Han, Zhigang Kan, Yifu Gao, Dongsheng Li},
+ booktitle = {Proc. of KSEM},
+ title = {Syntactic Enhanced Projection Network for Few-shot Chinese Event Extraction},
+ year = {2021}
+}
+```
 ## Acknowledgment
 Our code based on Meta Dialog Platform (MDP). The platform is developed by [HIT-SCIR](http://ir.hit.edu.cn/). 
 
